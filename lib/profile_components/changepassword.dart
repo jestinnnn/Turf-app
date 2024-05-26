@@ -29,17 +29,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                             context: context,
                             content: "password changes sucessfully",
                             buttonText: "OK",
-                            navigateFrom:ProfileScreen(),
+                            navigateFrom:HomeScreen(),
                             title: "NOTE");
-                        Routes.instance.push(HomeScreen(), context);
+                       
                       } else {
                         showCustomDialog(
                             context: context,
                             content: "Error changing password",
                             buttonText: "OK",
-                            navigateFrom: ProfileScreen(),
+                            navigateFrom: HomeScreen(),
                             title: "ALERT");
-                        Routes.instance.push(HomeScreen(), context);
+                      
                       }
   }
 

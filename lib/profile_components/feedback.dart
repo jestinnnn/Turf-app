@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:turf_nest/constants.dart';
 import 'package:turf_nest/firebase_helper/firebase_firestore_helper/firestore_helper.dart';
+import 'package:turf_nest/home.dart';
 import 'package:turf_nest/profile.dart';
 import 'package:turf_nest/routes.dart';
 
@@ -78,7 +79,7 @@ class FeedbackScreen extends StatelessWidget {
                       actions: [
                         TextButton(
                           onPressed: () {
-                            Routes.instance.push(ProfileScreen(), context);
+                            Routes.instance.push(HomeScreen(), context);
                           },
                           child: Text('OK'),
                         ),

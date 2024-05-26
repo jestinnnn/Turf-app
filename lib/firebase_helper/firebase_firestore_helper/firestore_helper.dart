@@ -10,8 +10,8 @@ class FirebaseFirestoreHelper {
   static FirebaseFirestoreHelper instance = FirebaseFirestoreHelper();
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
-  Future<void> bookTicket(
-      String game, String date, int time, String price,String phone,String email,String bookingtime) async {
+  Future<void> bookTicket(String game, String date, int time, String price,
+      String phone, String email, String bookingtime) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? userid = prefs.getString('userid');
     Random random = Random();
@@ -29,9 +29,9 @@ class FirebaseFirestoreHelper {
       "time": time,
       "status": "active",
       "price": price,
-      "phone":phone,
-      "email":email,
-      "bookingtime":bookingtime
+      "phone": phone,
+      "email": email,
+      "bookingtime": bookingtime
     });
   }
 
@@ -64,6 +64,25 @@ class FirebaseFirestoreHelper {
         .collection('users')
         .doc(userid)
         .collection('bookedtickets');
+
+    QuerySnapshot snapshot = await usersCollection
+        .where('date', isEqualTo: selectedDate.toString())
+        .get();
+
+    List<int> ticketSlots = [];
+    snapshot.docs.forEach((doc) {
+      final data = doc.data() as Map<String, dynamic>?;
+      if (data != null && data['time'] != null) {
+        ticketSlots.add(data['time'] as int);
+      }
+    });
+
+    return ticketSlots;
+  }
+
+  Future<List<int>> holidayDates(DateTime selectedDate) async {
+    CollectionReference usersCollection =
+        FirebaseFirestore.instance.collection('holidays');
 
     QuerySnapshot snapshot = await usersCollection
         .where('date', isEqualTo: selectedDate.toString())
@@ -135,14 +154,18 @@ class FirebaseFirestoreHelper {
     if (a) {
       List<int> slot = await getSlotsGreaterThanCurrentHour();
       List<int> slot2 = await getTicketsForDate(date);
+      List<int> slot3 = await holidayDates(date);
 
       slot.removeWhere((element) => slot2.contains(element));
+      slot.removeWhere((element) => slot3.contains(element));
       slot.sort();
       return slot;
     } else {
       List<int> slot = await getAllSlots();
       List<int> slot2 = await getTicketsForDate(date);
+      List<int> slot3 = await holidayDates(date);
       slot.removeWhere((element) => slot2.contains(element));
+      slot.removeWhere((element) => slot3.contains(element));
       slot.sort();
       return slot;
     }
@@ -168,11 +191,10 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  get_email()async{
+  get_email() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? email = prefs.getString('email');
     return email;
-
   }
 
   Future<void> feedback(String content, String phone, String email) async {
