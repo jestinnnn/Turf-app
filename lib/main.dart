@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:turf_nest/SplashScreen.dart';
 import 'package:turf_nest/firebase_helper/firebase_options.dart';
 
-
-
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -18,6 +16,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var nothing = 0;
     return MaterialApp(
       home: SplashScreen(),
     );
