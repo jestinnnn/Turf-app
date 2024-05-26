@@ -66,7 +66,7 @@ class _BookedTicketsScreenState extends State<BookedTicketsScreen> {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
-   
+    double verify = 9;
     double middleHeight = screenHeight * 0.4;
 
     return Scaffold(
@@ -160,9 +160,19 @@ class _BookedTicketsScreenState extends State<BookedTicketsScreen> {
                 ),
                 onTap: () {
                   if (a == Colors.green) {
-                    Routes.instance.push(QR(id: singlehistory!.id,qrnumber: singlehistory!.ticketid.toString(),), context);
+                    Routes.instance.push(
+                        QR(
+                          id: singlehistory!.id,
+                          qrnumber: singlehistory!.ticketid.toString(),
+                        ),
+                        context);
                   } else if (a == Colors.red) {
-                    showCustomDialog(context: context, content:"Ticket Expired", buttonText:"OK", navigateFrom:BookedTicketsScreen(), title: "Warning");
+                    showCustomDialog(
+                        context: context,
+                        content: "Ticket Expired",
+                        buttonText: "OK",
+                        navigateFrom: BookedTicketsScreen(),
+                        title: "Warning");
                   }
                 },
               );
