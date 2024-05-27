@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:turf_nest/constants.dart';
+import 'package:turf_nest/models/notifications_model.dart';
 import 'package:turf_nest/models/ticket_model.dart';
 
 class FirebaseFirestoreHelper {
@@ -245,6 +246,43 @@ class FirebaseFirestoreHelper {
       return data['price']?.toString();
     } else {
       return null;
+    }
+  }
+
+  Future<List<turfhistory_model>> getTurfHistory() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? action = prefs.getString('userid');
+      QuerySnapshot<Map<String, dynamic>> querrysnapshot =
+          await _firebaseFirestore
+              .collection("turfhistory")
+              .where("id", isEqualTo: action)
+              .get();
+
+      List<turfhistory_model> boardingrequestdetails = querrysnapshot.docs
+          .map((e) => turfhistory_model.fromJson(e.data()))
+          .toList();
+      return boardingrequestdetails;
+    } catch (e) {
+      showmessage(e.toString());
+      print(e.toString());
+      return [];
+    }
+  }
+
+  Future<String?> getlocation() async {
+    CollectionReference collection =
+        FirebaseFirestore.instance.collection('admin');
+
+    QuerySnapshot snapshot = await collection.get();
+
+    if (snapshot.docs.isNotEmpty) {
+      Map<String, dynamic> data =
+          snapshot.docs.first.data() as Map<String, dynamic>;
+
+      return data['location']?.toString();
+    } else {
+      return "kayamkulam";
     }
   }
 }

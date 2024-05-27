@@ -66,7 +66,7 @@ class _BookedTicketsScreenState extends State<BookedTicketsScreen> {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
-    double verify = 9;
+    
     double middleHeight = screenHeight * 0.4;
 
     return Scaffold(

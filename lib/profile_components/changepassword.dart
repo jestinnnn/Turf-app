@@ -3,7 +3,7 @@ import 'package:turf_nest/constants.dart';
 import 'package:turf_nest/firebase_helper/firebase_auth_helper/auth_helper.dart';
 import 'package:turf_nest/home.dart';
 import 'package:turf_nest/profile.dart';
-import 'package:turf_nest/routes.dart';
+
 
 class ChangePasswordScreen extends StatefulWidget {
   @override
@@ -29,7 +29,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                             context: context,
                             content: "password changes sucessfully",
                             buttonText: "OK",
-                            navigateFrom:HomeScreen(),
+                            navigateFrom:const HomeScreen(),
                             title: "NOTE");
                        
                       } else {
@@ -37,7 +37,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                             context: context,
                             content: "Error changing password",
                             buttonText: "OK",
-                            navigateFrom: HomeScreen(),
+                            navigateFrom: const HomeScreen(),
                             title: "ALERT");
                       
                       }
@@ -58,11 +58,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => ProfileScreen(),
+                builder: (context) => const ProfileScreen(),
               ),
             );
           },
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
             color: AppColors.white,
           ),
@@ -78,16 +78,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           ),
         ),
         AnimatedContainer(
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
           curve: Curves.easeInOut,
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: .05 * screenHeight),
               AnimatedOpacity(
-                duration: Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 500),
                 opacity: isChangingPassword ? 0 : 1,
                 child: Text(
                   "Change Password",
@@ -99,7 +99,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               ),
               SizedBox(height: .05 * screenHeight),
               AnimatedOpacity(
-                duration: Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 500),
                 opacity: isChangingPassword ? 0 : 1,
                 child: TextField(
                   enabled: !isChangingPassword,
@@ -117,7 +117,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               ),
               SizedBox(height: .01 * screenHeight),
               AnimatedOpacity(
-                duration: Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 500),
                 opacity: isChangingPassword ? 0 : 1,
                 child: TextField(
                   enabled: !isChangingPassword,
@@ -135,7 +135,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               ),
               SizedBox(height: 0.01 * screenHeight),
               AnimatedOpacity(
-                duration: Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 500),
                 opacity: isChangingPassword ? 0 : 1,
                 child: TextField(
                   enabled: !isChangingPassword,
@@ -151,11 +151,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               AnimatedSwitcher(
-                duration: Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 500),
                 child: isChangingPassword
-                    ? Center(
+                    ? const Center(
                         key: Key('loading'),
                         child: CircularProgressIndicator(),
                       )
@@ -167,7 +167,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           if (newPasswordController.text !=
                               confirmPasswordController.text) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
+                              const SnackBar(
                                 content: Text('Passwords do not match!'),
                                 duration: Duration(seconds: 2),
                               ),
@@ -176,7 +176,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                             _changePassword();
                           }
                         },
-                        child: Text('Change Password'),
+                        child: const Text('Change Password'),
                       ),
               ),
             ],

@@ -171,9 +171,9 @@ class _BookingState extends State<BookingScreen> {
                                     },
                                     style: ButtonStyle(
                                       backgroundColor:
-                                          MaterialStateProperty.all<Color>(
+                                          WidgetStateProperty.all<Color>(
                                               Colors.white),
-                                      shape: MaterialStateProperty.all<
+                                      shape: WidgetStateProperty.all<
                                           OutlinedBorder>(
                                         RoundedRectangleBorder(
                                           borderRadius:

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:turf_nest/constants.dart';
+import 'package:turf_nest/firebase_helper/firebase_firestore_helper/firestore_helper.dart';
 import 'package:turf_nest/home.dart';
+import 'package:turf_nest/models/notifications_model.dart';
 
 class Notification {
   final int id;
@@ -14,22 +16,40 @@ class Notification {
   });
 }
 
-class NotificationsScreen extends StatelessWidget {
-  final List<Notification> notifications = [
-    Notification(id: 1, message: 'Your booking is confirmed.', isActive: true),
-    Notification(id: 2, message: 'New offers available!', isActive: true),
-    Notification(id: 3, message: 'Payment received.', isActive: true),
-    Notification(
-        id: 4, message: 'Update your profile information.', isActive: false),
-    Notification(
-        id: 5, message: 'Event reminder: Tomorrow at 10 AM.', isActive: true),
-    Notification(
-        id: 6, message: 'Your account has been credited.', isActive: false),
-    Notification(
-        id: 7, message: 'Check out our latest blog post.', isActive: true),
-  ];
-
+class NotificationsScreen extends StatefulWidget {
   NotificationsScreen({super.key});
+
+  @override
+  State<NotificationsScreen> createState() => _NotificationsScreenState();
+}
+
+class _NotificationsScreenState extends State<NotificationsScreen> {
+  List<turfhistory_model> fullhistory = [];
+
+  turfhistory_model? singlehistory;
+
+  @override
+  void initState() {
+    super.initState();
+
+    getsport();
+  }
+
+  getsport() async {
+    fullhistory = await FirebaseFirestoreHelper.instance.getTurfHistory();
+    setState(() {});
+  }
+
+  String convertTo12HourFormat(int hour) {
+    String period = 'AM';
+    if (hour >= 12) {
+      period = 'PM';
+    }
+    if (hour > 12) {
+      hour -= 12;
+    }
+    return '$hour $period';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,15 +88,15 @@ class NotificationsScreen extends StatelessWidget {
             ),
           ),
           ListView.builder(
-            itemCount: notifications.length,
+            itemCount: fullhistory.length,
             itemBuilder: (context, index) {
-              final notification = notifications[index];
+              final singlehistory = fullhistory[index];
               return GestureDetector(
                 onTap: () {
-                  // Add your notification tap logic here
+                  // Add your singlehistory tap logic here
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Notification ID: ${notification.id}'),
+                      content: Text('Notification ID: ${index+1}'),
                       duration: const Duration(seconds: 2),
                     ),
                   );
@@ -104,7 +124,7 @@ class NotificationsScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Notification ID: ${notification.id}',
+                            'Ticket no: ${singlehistory.ticketid}',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -114,18 +134,19 @@ class NotificationsScreen extends StatelessWidget {
                             width: 10,
                             height: 10,
                             decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: notification.isActive
-                                  ? Colors.green
-                                  : Colors.red,
-                            ),
+                                shape: BoxShape.circle, color: Colors.green),
                           ),
                         ],
                       ),
                       const SizedBox(height: 10),
-                      Text(notification.message),
-                      Text(
-                          'Status: ${notification.isActive ? 'Active' : 'Inactive'}'),
+                      Text('Time:' +
+                          convertTo12HourFormat(singlehistory.time) +
+                          " - " +
+                          convertTo12HourFormat(singlehistory.time + 1)),
+                      Text('Date: ${singlehistory.date.substring(0,11)}'),
+                      Text('Activation Time: ${singlehistory.activationTime.substring(0,19)}'),
+                      Text('Price: ${singlehistory.price}'),
+                      Text('Sport: ${singlehistory.sport}'),
                     ],
                   ),
                 ),

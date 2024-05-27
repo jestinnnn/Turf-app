@@ -23,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _selectedSport;
   List<String> _sports = [];
   static List<String> disabledDates = ['2024-05-2', '2024-12-25'];
+  String? location;
 
   Future<void> launchMaps(String destination) async {
     String url =
@@ -42,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void getgames() async {
     _sports = await FirebaseFirestoreHelper.instance.getAllGames();
+    location = await FirebaseFirestoreHelper.instance.getlocation();
   }
 
   @override
@@ -123,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       SizedBox(height: .01 * screenHeight),
                       ElevatedButton.icon(
                         onPressed: () {
-                          launchMaps('Kayamkulam');
+                          launchMaps(location!);
                         },
                         style: ButtonStyles.styleFromWhiteRed(),
                         icon: const Icon(Icons.location_pin),
