@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+// Ensure you import intl package for date formatting
 import 'package:turf_nest/constants.dart';
 import 'package:turf_nest/firebase_helper/firebase_firestore_helper/firestore_helper.dart';
 import 'package:turf_nest/models/ticket_model.dart';
@@ -27,12 +27,26 @@ class BookedTicketsScreen extends StatefulWidget {
 }
 
 class _BookedTicketsScreenState extends State<BookedTicketsScreen> {
-  bool isloading = false;
-  List<ticket_Model> tickethistory = [];
+  bool isLoading = false;
+  List<ticket_Model> ticketHistory = [];
   double animatedContainerHeight = 0;
   bool isAnimatedWidgetVisible = false;
 
-  ticket_Model? singlehistory;
+  @override
+  void initState() {
+    super.initState();
+    getTicketList();
+  }
+
+  void getTicketList() async {
+    setState(() {
+      isLoading = true;
+    });
+    ticketHistory = await FirebaseFirestoreHelper.instance.getticket();
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   String convertTo12HourFormat(int hour) {
     String period = 'AM';
@@ -46,27 +60,9 @@ class _BookedTicketsScreenState extends State<BookedTicketsScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    getcategorylist();
-  }
-
-  void getcategorylist() async {
-    setState(() {
-      isloading = true;
-    });
-    tickethistory = await FirebaseFirestoreHelper.instance.getticket();
-
-    setState(() {
-      isloading = false;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
-    
     double middleHeight = screenHeight * 0.4;
 
     return Scaffold(
@@ -99,10 +95,15 @@ class _BookedTicketsScreenState extends State<BookedTicketsScreen> {
             ),
           ),
           ListView.builder(
-            itemCount: tickethistory.length,
+            itemCount: ticketHistory.length,
             itemBuilder: (context, index) {
-              singlehistory = tickethistory[index];
-              MaterialColor a;
+              var singleHistory = ticketHistory[index];
+              MaterialColor statusColor = singleHistory.status == "active"
+                  ? Colors.green
+                  : singleHistory.status == "expired"
+                      ? Colors.red
+                      : Colors.amber;
+
               return GestureDetector(
                 child: Container(
                   margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -126,7 +127,7 @@ class _BookedTicketsScreenState extends State<BookedTicketsScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'TICKET ID: ${singlehistory!.ticketid}',
+                            'TICKET ID: ${singleHistory.ticketid}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -137,42 +138,40 @@ class _BookedTicketsScreenState extends State<BookedTicketsScreen> {
                             height: 10,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: a = singlehistory!.status == "active"
-                                  ? Colors.green
-                                  : a = singlehistory!.status == "expired"
-                                      ? Colors.red
-                                      : Colors.amber,
+                              color: statusColor,
                             ),
                           ),
                         ],
                       ),
                       SizedBox(height: 10),
-                      Text('Booked Time:' +
-                          convertTo12HourFormat(singlehistory!.time) +
-                          " - " +
-                          convertTo12HourFormat(singlehistory!.time + 1)),
                       Text(
-                          'Booked Date: ${singlehistory!.date.substring(0, 11)}'),
-                      Text('Status: ${singlehistory!.status}'),
-                      Text('Price: ${singlehistory!.price}'),
+                        'Booked Time: ${convertTo12HourFormat(singleHistory.time)} - ${convertTo12HourFormat(singleHistory.time + 1)}',
+                      ),
+                      Text(
+                        'Booked Date: ${singleHistory.date.substring(0, 11)}',
+                      ),
+                      Text('Status: ${singleHistory.status}'),
+                      Text('Price: ${singleHistory.price}'),
                     ],
                   ),
                 ),
                 onTap: () {
-                  if (a == Colors.green) {
+                  if (statusColor == Colors.green) {
                     Routes.instance.push(
-                        QR(
-                          id: singlehistory!.id,
-                          qrnumber: singlehistory!.ticketid.toString(),
-                        ),
-                        context);
-                  } else if (a == Colors.red) {
+                      QR(
+                        id: singleHistory.id,
+                        qrnumber: singleHistory.ticketid.toString(),
+                      ),
+                      context,
+                    );
+                  } else if (statusColor == Colors.red) {
                     showCustomDialog(
-                        context: context,
-                        content: "Ticket Expired",
-                        buttonText: "OK",
-                        navigateFrom: BookedTicketsScreen(),
-                        title: "Warning");
+                      context: context,
+                      content: "Ticket Expired",
+                      buttonText: "OK",
+                      navigateFrom: BookedTicketsScreen(),
+                      title: "Warning",
+                    );
                   }
                 },
               );
@@ -183,31 +182,22 @@ class _BookedTicketsScreenState extends State<BookedTicketsScreen> {
     );
   }
 
-////////////////////////////
   bool isDateTimeLaterThanNow(String dateString, int hour) {
-    // Parse the date string into a DateTime object
     DateTime dateTime = DateTime.parse(dateString);
-
-    // Get the current date and time
     DateTime now = DateTime.now();
 
-    // Compare the date part
     if (dateTime.year > now.year ||
         (dateTime.year == now.year && dateTime.month > now.month) ||
-        (dateTime.year == now.year &&
-            dateTime.month == now.month &&
-            dateTime.day > now.day)) {
-      return true; // Date is later than now
+        (dateTime.year == now.year && dateTime.month == now.month && dateTime.day > now.day)) {
+      return true;
     } else if (dateTime.year == now.year &&
         dateTime.month == now.month &&
         dateTime.day == now.day) {
-      // Compare the time part if the date is the same
-      if (hour > now.hour ||
-          (hour == now.hour && dateTime.minute > now.minute)) {
-        return true; // Time is later than now
+      if (hour > now.hour || (hour == now.hour && dateTime.minute > now.minute)) {
+        return true;
       }
     }
 
-    return false; // Date and time are not later than now
+    return false;
   }
 }

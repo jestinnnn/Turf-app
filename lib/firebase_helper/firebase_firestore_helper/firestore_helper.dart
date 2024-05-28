@@ -58,19 +58,15 @@ class FirebaseFirestoreHelper {
   }
 
   Future<List<int>> getTicketsForDate(DateTime selectedDate) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? userid = prefs.getString('userid');
-
-    CollectionReference usersCollection = FirebaseFirestore.instance
-        .collection('users')
-        .doc(userid)
-        .collection('bookedtickets');
-
-    QuerySnapshot snapshot = await usersCollection
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collectionGroup('bookedtickets')
         .where('date', isEqualTo: selectedDate.toString())
         .get();
 
+    // Initialize a list to hold the ticket time slots
     List<int> ticketSlots = [];
+
+    // Process the query results
     snapshot.docs.forEach((doc) {
       final data = doc.data() as Map<String, dynamic>?;
       if (data != null && data['time'] != null) {

@@ -24,6 +24,8 @@ class _HomeScreenState extends State<HomeScreen> {
   List<String> _sports = [];
   static List<String> disabledDates = ['2024-05-2', '2024-12-25'];
   String? location;
+  bool isloading=false;
+
 
   Future<void> launchMaps(String destination) async {
     String url =
@@ -42,8 +44,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void getgames() async {
+    setState(() {
+      isloading=true;
+    });
     _sports = await FirebaseFirestoreHelper.instance.getAllGames();
     location = await FirebaseFirestoreHelper.instance.getlocation();
+    setState(() {
+      isloading=false;
+    });
   }
 
   @override
@@ -82,7 +90,19 @@ class _HomeScreenState extends State<HomeScreen> {
           iconSize: 35,
         ),
       ),
-      body: SafeArea(
+      body:isloading
+          ? Center(
+              child: Container(
+                color: Colors.white,
+                height: 150,
+                width: 300,
+                child: CircularProgressIndicator(
+                  color: Color.fromARGB(255, 15, 66, 107),
+                ),
+                alignment: Alignment.center,
+              ),
+            )
+          :  SafeArea(
         child: Stack(
           children: <Widget>[
             Positioned(
@@ -129,8 +149,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                         style: ButtonStyles.styleFromWhiteRed(),
                         icon: const Icon(Icons.location_pin),
-                        label: const Text(
-                          'Kayamkulam',
+                        label:  Text(
+                          location!,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 15),
                         ),
