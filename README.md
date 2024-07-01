@@ -1,4 +1,4 @@
-# Turf Nest(Under Development)
+# Turf Nest(Open for Development)
 
 Turf Nest aims to revolutionize traditional turf booking by bringing it online. 
 This single vendor application empowers turf vendors to efficiently monitor and manage users accessing their turf facilities through the application.
